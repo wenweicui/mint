@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "776326341244",
+    "project_id": "mintmate-9c857",
+    "storage_bucket": "mintmate-9c857.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:776326341244:android:8c7c2e84b40c0227271ff9",
+        "android_client_info": {
+          "package_name": "com.willc.mintmate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDycQfTwfS0TQWhWLv7q_QLvi_CWay6Loc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
