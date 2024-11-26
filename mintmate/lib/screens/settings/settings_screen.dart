@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mintmate/screens/home/home_screen.dart';
+import 'package:mintmate/screens/statistics/statistics_screen.dart';
+import 'package:mintmate/screens/transactions/transaction_screen.dart';
 import '../../widgets/bottom_navigation.dart';
 import '../../providers/auth_provider.dart';
 import 'profile_section.dart';
@@ -50,12 +53,38 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
       bottomNavigationBar: BottomNavigation(
-        currentIndex: 2,
+        currentIndex: 3,
         onTap: (index) {
           if (index == 0) {
-            Navigator.pushReplacementNamed(context, '/');
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) =>
+                    const HomeScreen(),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
           } else if (index == 1) {
-            Navigator.pushReplacementNamed(context, '/transactions');
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) =>
+                    const TransactionScreen(),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          } else if (index == 2) {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) =>
+                    const StatisticsScreen(),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
           }
         },
       ),
@@ -139,7 +168,9 @@ class SettingsScreen extends ConsumerWidget {
 
     if (confirm == true) {
       await ref.read(authServiceProvider).signOut();
-      // Navigate to home screen or login screen if required
+      if (context.mounted) {
+        Navigator.pushReplacementNamed(context, '/');
+      }
     }
   }
 }

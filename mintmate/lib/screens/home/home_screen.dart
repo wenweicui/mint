@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:mintmate/config/routes.dart';
 import 'package:mintmate/models/account.dart';
 import 'package:mintmate/models/time_range.dart';
 import 'package:mintmate/models/transaction.dart';
 import 'package:mintmate/providers/account_provider.dart';
 import 'package:mintmate/providers/transaction_provider.dart';
 import 'package:mintmate/providers/selected_range_provider.dart';
+import 'package:mintmate/screens/settings/settings_screen.dart';
+import 'package:mintmate/screens/statistics/statistics_screen.dart';
+import 'package:mintmate/screens/transactions/transaction_screen.dart';
 import 'package:mintmate/widgets/add_transaction_modal.dart';
 import '../../widgets/bottom_navigation.dart';
 import 'summary_widget.dart';
@@ -24,9 +26,6 @@ class HomeScreen extends ConsumerWidget {
     final selectedRange = ref.watch(selectedRangeProvider);
 
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const SizedBox(height: 16),
-      // ),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.read(accountsProvider.notifier).loadAccounts();
@@ -51,14 +50,40 @@ class HomeScreen extends ConsumerWidget {
         onPressed: () => _showAddTransactionModal(context),
         child: const Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavigation(
         currentIndex: 0,
         onTap: (index) {
           if (index == 1) {
-            Navigator.pushNamed(context, AppRoutes.transactions);
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) =>
+                    const TransactionScreen(),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          } else if (index == 3) {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) =>
+                    const SettingsScreen(),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
           } else if (index == 2) {
-            Navigator.pushNamed(context, AppRoutes.settings);
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) =>
+                    const StatisticsScreen(),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
           }
         },
       ),

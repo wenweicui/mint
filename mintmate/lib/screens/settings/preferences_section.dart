@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// Create a provider for app preferences
-final themeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
-final currencyProvider = StateProvider<String>((ref) => 'USD');
-final biometricsProvider = StateProvider<bool>((ref) => false);
+import '../../providers/app_providers.dart';
 
 class PreferencesSection extends ConsumerWidget {
   const PreferencesSection({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider);
-    final currency = ref.watch(currencyProvider);
-    final biometricsEnabled = ref.watch(biometricsProvider);
+    final themeMode = ref.watch(themeModeProvider);
+    final biometricEnabled = ref.watch(biometricEnabledProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,19 +29,23 @@ class PreferencesSection extends ConsumerWidget {
           subtitle: Text(_getThemeText(themeMode)),
           onTap: () => _showThemeSelector(context, ref),
         ),
-        ListTile(
-          leading: const Icon(Icons.attach_money),
-          title: const Text('Currency'),
-          subtitle: Text(currency),
-          onTap: () => _showCurrencySelector(context, ref),
-        ),
         SwitchListTile(
           secondary: const Icon(Icons.fingerprint),
           title: const Text('Biometric Authentication'),
           subtitle: const Text('Use fingerprint or face ID to open app'),
-          value: biometricsEnabled,
-          onChanged: (value) {
-            ref.read(biometricsProvider.notifier).state = value;
+          value: biometricEnabled,
+          onChanged: (value) async {
+            try {
+              await ref
+                  .read(biometricEnabledProvider.notifier)
+                  .setBiometricEnabled(value);
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(e.toString())),
+                );
+              }
+            }
           },
         ),
       ],
@@ -72,48 +71,30 @@ class PreferencesSection extends ConsumerWidget {
         children: [
           SimpleDialogOption(
             onPressed: () {
-              ref.read(themeProvider.notifier).state = ThemeMode.system;
+              ref
+                  .read(themeModeProvider.notifier)
+                  .setThemeMode(ThemeMode.system);
               Navigator.pop(context);
             },
             child: const Text('System Default'),
           ),
           SimpleDialogOption(
             onPressed: () {
-              ref.read(themeProvider.notifier).state = ThemeMode.light;
+              ref
+                  .read(themeModeProvider.notifier)
+                  .setThemeMode(ThemeMode.light);
               Navigator.pop(context);
             },
             child: const Text('Light'),
           ),
           SimpleDialogOption(
             onPressed: () {
-              ref.read(themeProvider.notifier).state = ThemeMode.dark;
+              ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark);
               Navigator.pop(context);
             },
             child: const Text('Dark'),
           ),
         ],
-      ),
-    );
-  }
-
-  void _showCurrencySelector(BuildContext context, WidgetRef ref) {
-    // Implement currency selection dialog
-    // You can add more currencies as needed
-    final currencies = ['USD', 'EUR', 'GBP', 'CAD', 'AUD'];
-
-    showDialog(
-      context: context,
-      builder: (context) => SimpleDialog(
-        title: const Text('Select Currency'),
-        children: currencies.map((currency) {
-          return SimpleDialogOption(
-            onPressed: () {
-              ref.read(currencyProvider.notifier).state = currency;
-              Navigator.pop(context);
-            },
-            child: Text(currency),
-          );
-        }).toList(),
       ),
     );
   }

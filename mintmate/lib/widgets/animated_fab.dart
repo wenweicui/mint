@@ -68,6 +68,7 @@ class _AnimatedFABState extends State<AnimatedFAB>
             angle: _rotateAnimation.value * 2 * 3.14159,
             child: FloatingActionButton(
               onPressed: _handleTap,
+              shape: const CircleBorder(),
               child: widget.child,
             ),
           ),

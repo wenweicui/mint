@@ -14,46 +14,36 @@ class AuthService {
     try {
       return await _auth.signInAnonymously();
     } catch (e) {
-      throw Exception('Failed to sign in anonymously: $e');
+      rethrow;
     }
   }
 
   // Sign in with email and password
-  Future<UserCredential> signInWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
+  Future<UserCredential> signInWithEmail(String email, String password) async {
     try {
       return await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
     } catch (e) {
-      throw Exception('Failed to sign in: $e');
+      rethrow;
     }
   }
 
   // Sign up with email and password
-  Future<UserCredential> signUpWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
+  Future<UserCredential> signUpWithEmail(String email, String password) async {
     try {
       return await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
     } catch (e) {
-      throw Exception('Failed to create account: $e');
+      rethrow;
     }
   }
 
   // Sign out
   Future<void> signOut() async {
-    try {
-      await _auth.signOut();
-    } catch (e) {
-      throw Exception('Failed to sign out: $e');
-    }
+    await _auth.signOut();
   }
 }

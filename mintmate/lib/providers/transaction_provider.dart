@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/transaction.dart';
 import '../services/database_service.dart';
 
@@ -50,5 +51,11 @@ class TransactionsNotifier extends StateNotifier<List<FinancialTransaction>> {
       print('Error clearing transactions: $e');
       rethrow;
     }
+  }
+
+  Future<void> clearTransactions() async {
+    state = [];
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('transactions');
   }
 }

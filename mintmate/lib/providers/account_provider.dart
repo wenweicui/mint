@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mintmate/providers/transaction_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/account.dart';
 import '../services/database_service.dart';
 import 'package:sqflite/sqflite.dart';
@@ -123,5 +124,11 @@ class AccountsNotifier extends StateNotifier<List<Account>> {
       print('Error clearing accounts: $e');
       rethrow;
     }
+  }
+
+  Future<void> clearAccounts() async {
+    state = [];
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('accounts');
   }
 }

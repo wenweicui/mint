@@ -12,19 +12,24 @@ class BottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      onTap: onTap,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
+    return NavigationBar(
+      selectedIndex: currentIndex,
+      onDestinationSelected: onTap,
+      animationDuration: const Duration(milliseconds: 200),
+      destinations: const [
+        NavigationDestination(
+          icon: Icon(Icons.account_balance),
+          label: 'Overview',
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.list),
-          label: 'Transactions',
+        NavigationDestination(
+          icon: Icon(Icons.payments),
+          label: 'Activities',
         ),
-        BottomNavigationBarItem(
+        NavigationDestination(
+          icon: Icon(Icons.insights),
+          label: 'Insights',
+        ),
+        NavigationDestination(
           icon: Icon(Icons.settings),
           label: 'Settings',
         ),

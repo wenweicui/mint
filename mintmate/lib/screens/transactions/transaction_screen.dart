@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mintmate/config/routes.dart';
+import 'package:mintmate/screens/home/home_screen.dart';
+import 'package:mintmate/screens/settings/settings_screen.dart';
+import 'package:mintmate/screens/statistics/statistics_screen.dart';
 import 'package:mintmate/widgets/add_transaction_modal.dart';
 import '../../providers/transaction_provider.dart';
 import '../../models/transaction.dart';
@@ -25,35 +29,9 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
     final filteredTransactions = _filterTransactions(transactions);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Transactions'),
-        actions: [
-          PopupMenuButton<TransactionType?>(
-            icon: const Icon(Icons.filter_list),
-            onSelected: (TransactionType? value) {
-              setState(() {
-                _filterType = value;
-              });
-            },
-            itemBuilder: (BuildContext context) => [
-              const PopupMenuItem(
-                value: null,
-                child: Text('All'),
-              ),
-              const PopupMenuItem(
-                value: TransactionType.income,
-                child: Text('Income'),
-              ),
-              const PopupMenuItem(
-                value: TransactionType.expense,
-                child: Text('Expense'),
-              ),
-            ],
-          ),
-        ],
-      ),
       body: Column(
         children: [
+          const SizedBox(height: 50),
           MonthSelectorWidget(
             selectedDate: _selectedDate,
             onMonthSelected: (date) {
@@ -61,6 +39,18 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
                 _selectedDate = date;
               });
             },
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                _buildFilterButton(null, 'All'),
+                const SizedBox(width: 8),
+                _buildFilterButton(TransactionType.expense, 'Expenses'),
+                const SizedBox(width: 8),
+                _buildFilterButton(TransactionType.income, 'Income'),
+              ],
+            ),
           ),
           Expanded(
             child: TransactionListWidget(
@@ -74,14 +64,40 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
         onPressed: () => _showAddTransactionModal(context),
         child: const Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavigation(
         currentIndex: 1,
         onTap: (index) {
           if (index == 0) {
-            Navigator.pushReplacementNamed(context, '/');
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) =>
+                    const HomeScreen(),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          } else if (index == 3) {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) =>
+                    const SettingsScreen(),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
           } else if (index == 2) {
-            Navigator.pushReplacementNamed(context, '/settings');
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) =>
+                    const StatisticsScreen(),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
           }
         },
       ),
@@ -136,6 +152,34 @@ class _TransactionScreenState extends ConsumerState<TransactionScreen> {
       isScrollControlled: true,
       useSafeArea: true,
       builder: (context) => const AddTransactionModal(),
+    );
+  }
+
+  Widget _buildFilterButton(TransactionType? type, String label) {
+    final isSelected = _filterType == type;
+    final color = type == TransactionType.income
+        ? Colors.red[400]
+        : type == TransactionType.expense
+            ? Colors.grey[800]
+            : Colors.grey[900];
+
+    return Expanded(
+      child: ElevatedButton(
+        onPressed: () {
+          setState(() {
+            _filterType = type;
+          });
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isSelected ? color : Colors.grey[200],
+          foregroundColor: isSelected ? Colors.white : Colors.black87,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+        ),
+        child: Text(label),
+      ),
     );
   }
 }

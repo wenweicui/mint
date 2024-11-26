@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mintmate/providers/data_provider.dart';
+import 'package:mintmate/providers/account_provider.dart';
+import 'package:mintmate/providers/transaction_provider.dart';
 
 class DataManagementSection extends ConsumerWidget {
   const DataManagementSection({super.key});
@@ -23,13 +26,13 @@ class DataManagementSection extends ConsumerWidget {
           leading: const Icon(Icons.backup_outlined),
           title: const Text('Export Data'),
           subtitle: const Text('Export your data as CSV'),
-          onTap: () => _exportData(context),
+          onTap: () => _exportData(context, ref),
         ),
         ListTile(
           leading: const Icon(Icons.restore),
           title: const Text('Import Data'),
           subtitle: const Text('Import data from backup'),
-          onTap: () => _importData(context),
+          onTap: () => _importData(context, ref),
         ),
         ListTile(
           leading: const Icon(Icons.delete_outline, color: Colors.red),
@@ -37,43 +40,55 @@ class DataManagementSection extends ConsumerWidget {
             'Clear All Data',
             style: TextStyle(color: Colors.red),
           ),
-          onTap: () => _showClearDataDialog(context),
+          onTap: () => _showClearDataDialog(context, ref),
         ),
       ],
     );
   }
 
-  Future<void> _exportData(BuildContext context) async {
-    // Implement data export functionality
-    // Show loading indicator while exporting
+  Future<void> _exportData(BuildContext context, WidgetRef ref) async {
+    final dataService = ref.read(dataServiceProvider);
+    final accounts = ref.read(accountsProvider);
+    final transactions = ref.read(transactionsProvider);
+
     try {
-      // Export logic here
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Data exported successfully')),
-      );
+      final message = await dataService.exportData(accounts, transactions);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to export data: $e')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to export data: $e')),
+        );
+      }
     }
   }
 
-  Future<void> _importData(BuildContext context) async {
-    // Implement data import functionality
-    // Show loading indicator while importing
+  Future<void> _importData(BuildContext context, WidgetRef ref) async {
     try {
-      // Import logic here
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Data imported successfully')),
-      );
+      await ref.read(dataServiceProvider).importData();
+      // Refresh providers after import
+      ref.refresh(accountsProvider);
+      ref.refresh(transactionsProvider);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Data imported successfully')),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to import data: $e')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to import data: $e')),
+        );
+      }
     }
   }
 
-  Future<void> _showClearDataDialog(BuildContext context) async {
+  Future<void> _showClearDataDialog(BuildContext context, WidgetRef ref) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -97,14 +112,53 @@ class DataManagementSection extends ConsumerWidget {
 
     if (confirm == true) {
       try {
-        // Implement clear data functionality
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('All data cleared')),
-        );
+        // Show loading indicator
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        // Clear data from providers
+        await ref.read(accountsProvider.notifier).clearAccounts();
+        await ref.read(transactionsProvider.notifier).clearTransactions();
+
+        // Clear all data from shared preferences
+        await ref.read(dataServiceProvider).clearAllData();
+
+        // Close loading indicator
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
+
+        // Show success message
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('All data has been cleared'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to clear data: $e')),
-        );
+        // Close loading indicator if it's showing
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
+
+        // Show error message
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to clear data: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     }
   }

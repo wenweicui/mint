@@ -25,6 +25,7 @@ class TransactionListWidget extends StatelessWidget {
     }
 
     return ListView.builder(
+      padding: const EdgeInsets.all(4),
       itemCount: transactions.length,
       itemBuilder: (context, index) {
         final transaction = transactions[index];
@@ -81,6 +82,7 @@ class TransactionListWidget extends StatelessWidget {
                         ? Colors.green
                         : Colors.red,
                     fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
               ),

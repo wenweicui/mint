@@ -13,6 +13,11 @@ class MonthSelectorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate if we're in the current month
+    final now = DateTime.now();
+    final isCurrentMonth =
+        selectedDate.year == now.year && selectedDate.month == now.month;
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       color: Theme.of(context).primaryColor.withOpacity(0.1),
@@ -35,7 +40,8 @@ class MonthSelectorWidget extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.chevron_right),
-            onPressed: () => _changeMonth(context, 1),
+            // Disable the button if we're in the current month
+            onPressed: isCurrentMonth ? null : () => _changeMonth(context, 1),
           ),
         ],
       ),
