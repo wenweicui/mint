@@ -4,6 +4,7 @@ import '../models/transaction.dart';
 import '../models/account.dart';
 
 class DatabaseService {
+  static const int _databaseVersion = 3;
   static Database? _database;
 
   Future<Database> get database async {
@@ -16,7 +17,7 @@ class DatabaseService {
     String path = join(await getDatabasesPath(), 'bookkeeping.db');
     return await openDatabase(
       path,
-      version: 2,
+      version: _databaseVersion,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -43,6 +44,7 @@ class DatabaseService {
         description TEXT NOT NULL,
         accountId TEXT NOT NULL,
         fromAccountId TEXT,
+        tags TEXT,
         FOREIGN KEY (accountId) REFERENCES accounts (id),
         FOREIGN KEY (fromAccountId) REFERENCES accounts (id)
       )
@@ -55,6 +57,13 @@ class DatabaseService {
         ALTER TABLE transactions 
         ADD COLUMN fromAccountId TEXT 
         REFERENCES accounts (id)
+      ''');
+    }
+
+    if (oldVersion < 3) {
+      await db.execute('''
+        ALTER TABLE transactions 
+        ADD COLUMN tags TEXT
       ''');
     }
   }

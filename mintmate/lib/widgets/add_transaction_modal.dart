@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 import '../models/transaction.dart';
-import '../models/account.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/account_provider.dart';
 
@@ -286,6 +286,7 @@ class _AddTransactionModalState extends ConsumerState<AddTransactionModal> {
   void _saveTransaction() {
     if (_formKey.currentState!.validate()) {
       final transaction = FinancialTransaction(
+        id: const Uuid().v4(),
         amount: double.parse(_amountController.text),
         category: _selectedCategory!,
         date: _selectedDate,

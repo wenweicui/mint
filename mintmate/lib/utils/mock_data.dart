@@ -4,7 +4,7 @@ import '../models/account.dart';
 import 'dart:math';
 
 class MockData {
-  static final _uuid = const Uuid();
+  static const _uuid = Uuid();
   static final DateTime now = DateTime.now();
 
   static List<Account> getMockAccounts() {

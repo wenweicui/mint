@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mintmate/screens/home/home_screen.dart';
 import 'package:mintmate/screens/settings/settings_screen.dart';
+import 'package:mintmate/screens/statistics/trend_chart.dart';
 import 'package:mintmate/screens/transactions/transaction_screen.dart';
 import '../../widgets/bottom_navigation.dart';
-import 'trend_chart.dart';
 import 'cash_flow_card.dart';
 import 'bar_chart_card.dart';
 
@@ -14,21 +14,22 @@ class StatisticsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Analytics'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {
-              // Add filter or export options
-            },
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Analytics'),
+      //   actions: [
+      //     IconButton(
+      //       icon: const Icon(Icons.more_vert),
+      //       onPressed: () {
+      //         // Add filter or export options
+      //       },
+      //     ),
+      //   ],
+      // ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: const [
-          // TrendChart(),
+          SizedBox(height: 50),
+          TrendChart(),
           SizedBox(height: 16),
           CashFlowCard(),
           SizedBox(height: 16),

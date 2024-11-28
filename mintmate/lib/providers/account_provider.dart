@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/account.dart';
 import '../services/database_service.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
 
 final accountsProvider =
     StateNotifierProvider<AccountsNotifier, List<Account>>((ref) {
@@ -13,6 +14,7 @@ final accountsProvider =
 
 class AccountsNotifier extends StateNotifier<List<Account>> {
   final DatabaseService _dbService;
+  final _uuid = const Uuid();
 
   AccountsNotifier(this._dbService) : super([]) {
     loadAccounts();
@@ -35,6 +37,7 @@ class AccountsNotifier extends StateNotifier<List<Account>> {
 
   Future<void> createDefaultAccount() async {
     final defaultAccount = Account(
+      id: _uuid.v4(),
       name: 'Default Account',
       type: AccountType.checking,
       balance: 0.0,
@@ -69,9 +72,27 @@ class AccountsNotifier extends StateNotifier<List<Account>> {
   }
 
   Future<void> addAccount(Account account) async {
+    // Always generate a new UUID for new accounts
+    final accountWithId = Account(
+      id: null, // This will force UUID generation in the constructor
+      name: account.name,
+      type: account.type,
+      balance: account.balance,
+      currency: account.currency,
+    );
+
     final db = await _dbService.database;
-    await db.insert('accounts', account.toMap());
-    await loadAccounts();
+    try {
+      await db.insert(
+        'accounts',
+        accountWithId.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.abort,
+      );
+      await loadAccounts();
+    } catch (e) {
+      print('Error adding account: $e');
+      rethrow;
+    }
   }
 
   Future<void> updateAccount(Account account) async {

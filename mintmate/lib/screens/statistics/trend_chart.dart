@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fl_chart/fl_chart.dart';
 import '../../../models/time_range.dart';
 
 class TrendChart extends ConsumerStatefulWidget {
@@ -20,16 +21,16 @@ class _TrendChartState extends ConsumerState<TrendChart> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Text(
+              'Income & Spending Trend',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Income & Spending Trend',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
                 SegmentedButton<TimeRange>(
                   segments: const [
                     ButtonSegment(value: TimeRange.week, label: Text('Week')),
@@ -49,12 +50,42 @@ class _TrendChartState extends ConsumerState<TrendChart> {
               ],
             ),
             const SizedBox(height: 24),
-            // const SizedBox(
-            //   height: 200,
-            //   child: LineChart(
-            //       // ... Your existing line chart configuration
-            //       ),
-            // ),
+            SizedBox(
+              height: 200,
+              child: LineChart(
+                LineChartData(
+                  gridData: FlGridData(show: false),
+                  titlesData: FlTitlesData(show: false),
+                  borderData: FlBorderData(
+                    show: true,
+                    border:
+                        Border.all(color: const Color(0xff37434d), width: 1),
+                  ),
+                  minX: 0,
+                  maxX: 11,
+                  minY: 0,
+                  maxY: 6,
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: [
+                        FlSpot(0, 3),
+                        FlSpot(2.6, 2),
+                        FlSpot(4.9, 5),
+                        FlSpot(6.8, 3.1),
+                        FlSpot(8, 4),
+                        FlSpot(9.5, 3),
+                        FlSpot(11, 4),
+                      ],
+                      isCurved: true,
+                      barWidth: 2,
+                      isStrokeCapRound: true,
+                      dotData: FlDotData(show: false),
+                      belowBarData: BarAreaData(show: false),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
